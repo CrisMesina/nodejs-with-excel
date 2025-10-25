@@ -1,29 +1,47 @@
 import XlsxPopulate from "xlsx-populate";
 import readline from "readline";
+import fs from "fs";
 
+
+const usuario = fs.existsSync('./usuarios.xlsx'); // fs.existsSync verifica si un archivo existe en la ruta dada ( ME RETORNA TRUE O FALSE  :O )
 
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
-0
+
+let existeLibro = usuario;
 
 async function index(){
+
+
     console.clear();
     console.log('Que quieres realizar?');
     rl.question(`
-        1. Ingresar datos de usuarios \n
+        1. ${existeLibro ? 'Ingresar Usuarios' : 'Crear Libro'} \n
         2. Mostrar Listado \n
         3. Modificar datos de usuarios \n
         4. Eliminar datos de usuarios \n
         5. Salir\n`, (opcion) =>{
         switch(opcion){
             case '1':
-                console.log('Direccionando...')
-                setTimeout(() =>{
-                    console.clear();
-                    ingresarDatos();
-                }, 1000)
+                if(!existeLibro){
+                    console.log('Creando libro...');
+                    crearLibro().then(()=>{
+                        console.clear();
+                        console.log('Libro creado de forma exitosa');
+                        setTimeout(()=>{
+                            index();
+
+                        }, 1000)
+                    })
+                }else {
+                    console.log('Direccionando a ingreso de usuarios...');
+                    setTimeout(() =>{
+                        console.clear();
+                        ingresarDatos();
+                    }, 1000);
+                }
                 break;
             case '2':
                 console.log('Cargando listado...')
@@ -59,18 +77,32 @@ async function index(){
 index();
 
 
-async function ingresarDatos() {
-
-    const workbook = await XlsxPopulate.fromFileAsync('./usuarios.xlsx');
-
-    const total = workbook.sheet(0).usedRange().value().length - 1;
-
-    
+async function crearLibro(){
+    const workbook = await XlsxPopulate.fromBlankAsync();
 
     workbook.sheet(0).cell('A1').value('ID');
     workbook.sheet(0).cell('B1').value('Nombre');
     workbook.sheet(0).cell('C1').value('Apellido');
     workbook.sheet(0).cell('D1').value('Email');
+
+    workbook.toFileAsync('./usuarios.xlsx').then(()=>{
+        console.log('Libro creado');
+        setTimeout(()=>{
+            index();
+        }, 500);
+    })
+
+    existeLibro = true;
+
+}
+
+
+async function ingresarDatos() {
+
+
+    const workbook = await XlsxPopulate.fromFileAsync('./usuarios.xlsx');
+
+    const total = workbook.sheet(0).usedRange().value().length - 1;
 
     console.clear();
     console.log('Esta es una base datos que almacena información de usuarios.');
