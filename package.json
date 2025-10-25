@@ -1,0 +1,15 @@
+{
+  "name": "nodejs-xlsx-populate",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "xlsx-populate": "^1.21.0"
+  }
+}
